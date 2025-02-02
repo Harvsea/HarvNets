@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Video - HarvNet</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Upload Video Baru di <span>HarvNet</span></h1>
+    <nav>
+      <a href="index.html">Back To Lobby</a>
+    </nav>
+  </header>
+
+  <section class="section">
+    <h2>Form Upload</h2>
+    <form id="uploadForm">
+      <label for="videoFile">Pick Video</Video></label>
+      <input type="file" id="videoFile" accept="video/*" required>
+
+      <label for="videoTitle">Video Name</label>
+      <input type="text" id="videoTitle" placeholder="Masukkan judul video" required>
+
+      <button type="submit">Upload Video</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 HarvNet. Copyright.</p>
+  </footer>
+
+  <script>
+    // Fungsi untuk menghasilkan thumbnail dari detik acak dalam video
+    function generateThumbnail(file) {
+      return new Promise((resolve, reject) => {
+        const videoElement = document.createElement('video');
+        videoElement.src = URL.createObjectURL(file);
+        videoElement.muted = true;
+        videoElement.playsInline = true;
+        videoElement.style.display = 'none'; // Jangan tampilkan elemen video
+
+        document.body.appendChild(videoElement);
+
+        videoElement.addEventListener('loadedmetadata', () => {
+          const duration = videoElement.duration;
+          const randomTime = Math.random() * duration;
+          videoElement.currentTime = randomTime;
+        });
+
+        videoElement.addEventListener('seeked', () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = videoElement.videoWidth;
+          canvas.height = videoElement.videoHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+          const thumbnailData = canvas.toDataURL('image/png');
+
+          document.body.removeChild(videoElement);
+          resolve(thumbnailData);
+        });
+
+        videoElement.addEventListener('error', () => {
+          document.body.removeChild(videoElement);
+          reject("Error generating thumbnail");
+        });
+      });
+    }
+
+    // Tangani proses upload video
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const videoFileInput = document.getElementById('videoFile');
+      const videoTitleInput = document.getElementById('videoTitle');
+      const file = videoFileInput.files[0];
+      const title = videoTitleInput.value.trim();
+
+      if (file && title) {
+        const videoURL = URL.createObjectURL(file);
+        const uniqueId = 'video_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+
+        try {
+          // Menghasilkan thumbnail
+          const thumbnail = await generateThumbnail(file);
+
+          // Simpan data video ke localStorage
+          const videoData = {
+            title: title,
+            videoURL: videoURL,
+            thumbnail: thumbnail
+          };
+
+          localStorage.setItem(uniqueId, JSON.stringify(videoData));
+
+          alert('Video berhasil diupload! Video Anda memiliki kode: ' + uniqueId);
+          window.location.href = 'index.html';
+        } catch (error) {
+          alert("Gagal membuat thumbnail: " + error);
+        }
+      } else {
+        alert('Silakan lengkapi data upload!');
+      }
+    });
+  </script>
+</body>
+</html>

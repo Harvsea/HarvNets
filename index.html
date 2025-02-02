@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HarvNet - Lobby</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Welcome To <span>HarvNet</span></h1>
+    <nav>
+      <a href="upload.html">Upload Video</a>
+    </nav>
+  </header>
+
+  <section id="video-list" class="section">
+    <h2>Video Terbaru</h2>
+    <div id="videos">
+      <!-- Daftar video akan dimuat secara dinamis -->
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 HarvNet. Copyright</p>
+  </footer>
+
+  <script>
+    window.onload = function() {
+      const videosContainer = document.getElementById('videos');
+      videosContainer.innerHTML = '';
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('video_')) {
+          const videoData = JSON.parse(localStorage.getItem(key));
+
+          const videoDiv = document.createElement('div');
+          videoDiv.classList.add('video-item');
+
+          if (videoData.thumbnail) {
+            const thumbnailImg = document.createElement('img');
+            thumbnailImg.src = videoData.thumbnail;
+            thumbnailImg.alt = videoData.title;
+            thumbnailImg.classList.add('video-thumbnail');
+            videoDiv.appendChild(thumbnailImg);
+          }
+
+          const videoLink = document.createElement('a');
+          videoLink.href = `video.html?id=${key}`;
+          videoLink.innerText = videoData.title;
+          videoDiv.appendChild(videoLink);
+
+          videosContainer.appendChild(videoDiv);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

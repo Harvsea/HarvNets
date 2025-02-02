@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video - HarvNet</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Video <span>HarvNet</span></h1>
+    <nav>
+      <a href="index.html">Back To Lobby</a>
+    </nav>
+  </header>
+
+  <section class="section" id="video-container">
+    <h2 id="video-title">Video name</h2>
+    <video id="video-player" controls>
+      <p>Browser Anda tidak mendukung pemutaran video.</p>
+    </video>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 HarvNet. Copyright.</p>
+  </footer>
+
+  <script>
+    function getParameterByName(name, url = window.location.href) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    window.onload = function() {
+      const videoId = getParameterByName('id');
+      if (!videoId) {
+        alert('Video tidak ditemukan.');
+        return;
+      }
+
+      const videoDataStr = localStorage.getItem(videoId);
+      if (!videoDataStr) {
+        alert('Data video tidak ditemukan.');
+        return;
+      }
+
+      const videoData = JSON.parse(videoDataStr);
+      console.log("Data video yang dimuat:", videoData); // Pastikan data benar-benar dimuat
+
+      const videoPlayer = document.getElementById('video-player');
+      const videoSource = document.createElement('source');
+
+      // Menampilkan judul video
+      document.getElementById('video-title').innerText = videoData.title;
+
+      // Mengatur sumber video dengan URL yang valid
+      videoSource.src = videoData.videoURL; // Pastikan ini adalah URL yang dapat diakses oleh browser
+      videoSource.type = 'video/mp4';
+
+      // Memasukkan source ke dalam video player
+      videoPlayer.appendChild(videoSource);
+      videoPlayer.load(); // Memuat ulang video setelah menambahkan sumber
+
+      // Menambahkan event listener untuk tombol Play jika perlu
+    }
+  </script>
+</body>
+</html>
